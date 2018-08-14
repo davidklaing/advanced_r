@@ -1,0 +1,80 @@
+---
+title: "Data structures"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Opening quiz:
+
+1. What are the three properties of a vector, other than its contents?
+	* Length, type, and...attributes? (like names?)
+2. What are the four common types of atomic vectors? What are the two rare types?
+	* boolean, numeric (integer and double), factor, string. raw and complex?
+3. What are attributes? How do you get them and set them?
+	* Not really sure about either.
+4. How is a list different from an atomic vector? How is a matrix different from a data frame?
+	* A list is different than an atomic vector in that it can contain heterogeneous types. It can also be nested. Atomic vectors are homogeneous and flat. A matrix is different than a dataframe in that it is homogenous, like a vector. A dataframe can contain heterogenous types.
+5. Can you have a list that is a matrix? Can a data frame have a column that is a matrix?
+	* I don't think you can have a list that *is* a matrix, but I think you can have a list of length one that *contains* a matrix?
+	* I bet a data frame could have a column that is a matrix, because it can have columns that are vectors, lists, or data frames. But I've never seen a data frame with a column that is a matrix.
+
+## Vectors
+
+A list *is* a vector. But an atomic vector is not a list. So, hierarchically:
+
+* Vectors
+	* Atomic vectors
+	* Lists (non-atomic vectors?)
+
+* `is.vector()` doesn't test whether an object is a vector; it returns `TRUE` only if the object is a vector with no attributes apart from names. 
+	* Q: why?
+* `c()` is short for "combine"!
+
+* Lists are sometimes called *recursive* vectors because lists can contain other lists.
+	* Q: is *recursive* meant to be the opposite of *atomic*?
+
+### Exercises
+
+1. What are the six types of atomic vector? How does a list differ from an atomic vector?
+	* boolean
+	* integer
+	* double
+	* character
+	* complex
+	* raw
+	* A list is different than an atomic vector in that it can contain heterogeneous types and it can contain nested structures. (It's sometimes called a *recursive* vector.) An atomic vector is always flat and all the values it contains must have the same type. 
+
+2. What makes `is.vector()` and `is.numeric()` fundamentally different to `is.list()` and `is.character()`?
+  * What does `is.vector()` do again? I guess it just checks whether an object is a vector that doesn't have attributes other than names? I'm not sure how to link that up with `is.numeric()`. I know that `is.list()` only returns true on... lists, i.e. recursive, i.e. non-atomic vectors. But `is.numeric()` and `is.character()` only return true for atomic vectors. So I'm confused about this one. Come back to it.
+
+3. Test your knowledge of vector coercion rules by predicting the output of the following uses of c():
+
+```
+c(1, FALSE) # a double vector, 1 and 0
+c("a", 1) # a character vector, "a" and "1"
+c(list(1), "a") # a character vector "1" and "a"
+c(TRUE, 1L) # an integer vector, 1L and 1L
+```
+
+```{r}
+c(1, FALSE) # a double vector, 1 and 0 CORRECT
+c("a", 1) # a character vector, "a" and "1" CORRECT
+c(list(1), "a") # a character vector "1" and "a" INCORRECT
+c(TRUE, 1L) # an integer vector, 1L and 1L CORRECT
+```
+
+> I got that third one wrong! I was thinking that `c()` would coerce everything to vectors, because I think I still think of `c()` as "create a vector", but in fact it just means `combine()`. So it first coerced the `"a"` to a list, and then it created a list of two lists.
+
+4. Why do you need to use unlist() to convert a list to an atomic vector? Why doesn’t as.vector() work?
+  * Because a list is already a vector, just not an atomic one.
+
+5. Why is 1 == "1" true? Why is -1 < FALSE true? Why is "one" < 2 false?
+  * In the first and second cases, the inputs on either side of the operator can be coerced to the same type, namely double. But in the third case, `"one"` can't be coerced to a numeric.
+
+6. Why is the default missing value, NA, a logical vector? What’s special about logical vectors? (Hint: think about c(FALSE, NA_character_).)
+  * What's special about logical vectors is that they can be coerced all the way from boolean up to character. `FALSE` can become `1L`, which can become `1`, which can become `"1"`. So if you have a vector of any type and you put `NA` in it, that can always be coerced to the type you're looking for. (And conversely, that default logical NA isn't going to coerce *other* inputs into logicals.)
+  * If you do `c(FALSE, NA_character_)`, you should end up with `"FALSE"` and `NA_character_`
+
