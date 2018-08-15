@@ -78,3 +78,54 @@ c(TRUE, 1L) # an integer vector, 1L and 1L CORRECT
   * What's special about logical vectors is that they can be coerced all the way from boolean up to character. `FALSE` can become `1L`, which can become `1`, which can become `"1"`. So if you have a vector of any type and you put `NA` in it, that can always be coerced to the type you're looking for. (And conversely, that default logical NA isn't going to coerce *other* inputs into logicals.)
   * If you do `c(FALSE, NA_character_)`, you should end up with `"FALSE"` and `NA_character_`
 
+## Attributes
+
+* You can remove names from a named vector with `unname()`.
+* A factor vector is just an integer vector with two special attributes:
+  * A `class`, "factor", which makes them behave differently than regular integer vectors. (Maybe you can't use arithmetic on them? Correct! `factor(c("a", "b", "c")) + 1` returns `‘+’ not meaningful for factors`)
+  * `levels`, which defines the set of allowed values.
+* I didn't know you could use `table` on a factor vector
+
+### Exercises
+
+1. An early draft used this code to illustrate structure():
+
+```
+structure(1:5, comment = "my attribute")
+## [1] 1 2 3 4 5
+```
+
+But when you print that object you don’t see the comment attribute. Why? Is the attribute missing, or is there something else special about it? (Hint: try using help.)
+
+> The attribute is not missing. The comment attribute is special — it isn't printed by default. You can access it with `comment()`, or with `attr(my_vector, "comment")`.
+
+2. What happens to a factor when you modify its levels?
+
+```{r}
+f1 <- factor(letters)
+f1
+
+levels(f1) <- rev(levels(f1))
+f1
+
+levels(f1)
+
+f1
+```
+
+> The `levels` attribute changes, which changes the allowed/disallowed values, and also changes the ordering of those values.
+> Oh wow. The values themselves changed order too... I'm confused about this.
+> Q: why did that happen?
+
+3. What does this code do? How do f2 and f3 differ from f1?
+
+```{r}
+f2 <- rev(factor(letters))
+f2
+
+f3 <- factor(letters, levels = rev(letters))
+f3
+```
+
+> f2 is different than f1 because it just reverses the order of the values in the vector without reversing the order of the levels.
+> f3 is the opposite — it reverses the order of the levels without reversing the order of the vector values.
