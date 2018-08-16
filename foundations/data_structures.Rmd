@@ -129,3 +129,89 @@ f3
 
 > f2 is different than f1 because it just reverses the order of the values in the vector without reversing the order of the levels.
 > f3 is the opposite — it reverses the order of the levels without reversing the order of the vector values.
+
+## Matrices and arrays
+
+```{r}
+# Two scalar arguments to specify rows and columns
+a <- matrix(1:6, ncol = 3, nrow = 2)
+a
+
+# One vector argument to describe all dimensions
+b <- array(1:12, c(2, 3, 2))
+b
+
+# You can also modify an object in place by setting dim()
+c <- 1:6
+dim(c) <- c(3, 2, 1)
+c
+```
+
+So, the `matrix` function is very much like the `array` function except that it takes the arguments `ncol` and `nrow` instead of a the `dim` argument. Although, if you change the `dim` attribute of a vector, you can turn it into a matrix. Can you change the `dim` attribute of a matrix to turn it into an array? Let's see.
+
+```{r}
+d <- matrix(1:8, nrow = 2, ncol = 4)
+dim(d) <- c(2,2,2)
+d
+```
+
+You can indeed!
+
+```{r}
+dimnames(d) <- list(c("xdim", "ydim"), c("newdim", "olddim"), c("mydim", "yourdim"))
+
+dimnames(d)
+
+d
+```
+
+So if you want to name the dimensions, you need to name every index within that dimension.
+
+You can make list arrays and list matrices.
+
+```{r}
+l <- list(1:3, "a", TRUE, 1.0)
+
+l
+
+dim(l) <- c(2, 2)
+l
+
+l
+```
+
+### Exercises
+
+1. What does dim() return when applied to a vector?
+> The length of the vector, I suppose?
+
+2. If is.matrix(x) is TRUE, what will is.array(x) return?
+> I assume TRUE? All matrices are arrays but not all arrays are matrices? (Does this mean that all atomic vectors are matrices and all vectors are arrays?)
+
+```{r}
+p <- matrix(1:10, ncol = 5, nrow = 2)
+is.array(p)
+
+q <- 1:10
+
+is.array(q)
+```
+
+Q: Why is it that all matrices are arrays but not all atomic vectors are arrays? Hmmm. What about a 1D matrix - would that be an array?
+
+```{r}
+z <- matrix(1:10, nrow = 10)
+is.array(z)
+```
+
+So really it's that there's something special about atomic vectors. They are 1D, but we haven't *specified* that they're 1D. That's what makes them different from all arrays?
+
+3. How would you describe the following three objects? What makes them different to 1:5?
+
+```
+x1 <- array(1:5, c(1, 1, 5))
+x2 <- array(1:5, c(1, 5, 1))
+x3 <- array(1:5, c(5, 1, 1))
+```
+
+Each of them is a 3D object in which the maximum index in two dimensions is 1, whereas 1:5 is a 1D object.
