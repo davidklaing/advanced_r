@@ -215,3 +215,57 @@ x3 <- array(1:5, c(5, 1, 1))
 ```
 
 Each of them is a 3D object in which the maximum index in two dimensions is 1, whereas 1:5 is a 1D object.
+
+## Data frames
+
+Under the hood, a dataframe is a list of equal-length vectors. So it's a recursive vector that must contain lists or atomic vectors that are all of equal length. But those lists can themselves contain other objects, which is why a dataframe is itself a list.
+
+Also, a dataframe is an S3 class. I'm not sure what this means.
+
+A dataframe's type is a list, but its class is a dataframe. I guess types are restricted to lists and each of the atomic vector types. So really it's types of vectors — recursive vectors and all the atomic vector types? (If you use an array or a matrix, you just get the underlying atomic vector type.) Ooh, what about a factor? I bet its type is integer. Yes!
+
+```{r}
+typeof(c(1,2,3))
+typeof(list(1,2,3))
+typeof(matrix(1,2,3,4))
+typeof(matrix(c(1,2,3,4), 2, 2))
+typeof(matrix(c(1,2,3,4), 2, 2))
+typeof(factor(c("a", "b")))
+```
+
+To combine two dataframes row-wise when they don't have the same columns `plyr::rbind.fill()`.
+
+`data.frame()` doesn't like it when list columns are defined it in directly. I don't think this is true of a tibble.
+
+You can have array columns. That could come in handy.
+
+## Exercises
+
+1. What attributes does a data frame possess?
+> names (colnames), rownames (sometimes), row number, col number.
+
+2. What does as.matrix() do when applied to a data frame with columns of different types?
+> coerces them all to the most flexible type that they all share
+
+```{r}
+typeof(as.matrix(data.frame(a = c(1L, 2L), b = c(3,4))))
+
+# but this is weird:
+matrix(data.frame(a = c(1L, 2L), b = c(3,4)))[1]
+```
+
+Q: why does `matrix()` convert a dataframe to a list?
+
+3. Can you have a data frame with 0 rows? What about 0 columns?
+
+Zero rows yes — all it means is that you have a list of length-0 vectors.
+
+Zero columns, I don't think so.
+
+```{r}
+str(data.frame())
+```
+
+Turns out you can! But it means you have to have zero rows as well. Because the rows are stored within the columns, not the other way around.
+
+
