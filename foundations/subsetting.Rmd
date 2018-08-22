@@ -1,0 +1,130 @@
+---
+title: "Subsetting"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Subsetting is a natural complement to `str()`. `str()` shows you the structure of an object, and subsetting allows you to pull the parts you're interested in. I should really get in the habit of using `str()` more often.
+
+## Opening quiz:
+
+1. What is the result of subsetting a vector with positive integers, negative integers, a logical vector, or a character vector?
+> positive integers: you'll get the ith element, starting from the beginning, counting up from 1.
+> negative integers: you'll get elements in order counting down from length(vector)
+> logical vectors: if the logical vector is the same length is the vector you're subsetting, maybe it'll get every element where the logical vector is TRUE? (But isn't that what `which()` is for? I feel like maybe it'll just give you an "index out of bounds" if there are any FALSE values, and if not just return the first element.)
+> character vector: error, I assume?
+
+2. What’s the difference between [, [[, and $ when applied to a list?
+> I don't remember the difference between [ and [[. $ allows you to index by name.
+
+3. When should you use drop = FALSE?
+> No idea.
+
+4. If x is a matrix, what does x[] <- 0 do? How is it different to x <- 0?
+> does `x[] <- 0` set the dimensions of the matrix to 0 and 0, whereas `x <- 0` sets its contents to all 0?
+
+5. How can you use a named vector to relabel categorical variables?
+> I dunno!
+
+## Atomic vectors
+
+If you index an atomic vector with a logical vector, it returns the values where the index is TRUE.
+
+If you index an atomic vector with a character vector, it returns the values whose names match the index. If no names match the index, it returns missing values.
+
+## Lists
+
+Subsetting lists with `[` works the exact same as with atomic vectors. (`[[` and `$` allow you to pull out components of the list.)
+
+## Matrices
+
+```{r}
+a <- matrix(1:9, nrow = 3)
+colnames(a) <- c("A", "B", "C")
+a
+```
+
+### Exercises
+
+1. Fix each of the following common data frame subsetting errors:
+
+```{r}
+mtcars
+
+# mtcars[mtcars$cyl = 4, ]
+mtcars[mtcars$cyl == 4, ]
+
+# mtcars[-1:4, ]
+mtcars[-1:-4, ]
+
+# mtcars[mtcars$cyl <= 5]
+mtcars[mtcars$cyl <= 5, ]
+
+#mtcars[mtcars$cyl == 4 | 6, ]
+mtcars[mtcars$cyl == 4 | mtcars$cyl == 6, ]
+```
+
+2. Why does `x <- 1:5; x[NA]` yield five missing values? (Hint: why is it different from `x[NA_real_]`?)
+
+```{r}
+x <- 1:5; x[NA]
+x[1]
+```
+> Because `NA` is logical, so the index is logical, so the index gets multiplied until it's the length of the original vector, and then it wants to return each value only if the index is TRUE. But since all the index values are missing, it returns missing values for all elements.
+> `NA_real_` isn't logical, so it doesn't get multiplied to the length of the whole vector.
+
+3. What does `upper.tri()` return? How does subsetting a matrix with it work? Do we need any additional subsetting rules to describe its behaviour?
+
+```{r}
+x <- outer(1:5, 1:5, FUN = "*")
+x
+x[upper.tri(x)]
+```
+
+> It returns the upper triangle from a matrix. It has an option to either include or not include the diagonal. 
+> Q: I'm not sure what is meant by the question of whether we need additional subsetting rules to describe its behavior.
+
+4. Why does `mtcars[1:20]` return an error? How does it differ from the similar `mtcars[1:20, ]`?
+
+> It returns an error because mtcars is a dataframe, not a matrix, so it requires both a row index and a column index (even if one of them is NULL).
+
+```{r}
+as.matrix(mtcars)[1:20]
+```
+
+5. Implement your own function that extracts the diagonal entries from a matrix (it should behave like diag(x) where x is a matrix).
+
+```{r}
+extract_diagonal_entries <- function(matrix_input) {
+  matrix_rows <- nrow(matrix_input)
+  matrix_columns <- ncol(matrix_input)
+  if (matrix_rows != matrix_columns) {
+    stop("Input matrix is not square.")
+  } else {
+    diagonal_index <- seq(1, matrix_rows*matrix_columns, matrix_rows + 1)
+    matrix_input[diagonal_index]
+  }
+}
+extract_diagonal_entries(matrix(1:16, ncol = 4, nrow = 4))
+matrix(1:16, ncol = 4, nrow = 4)
+```
+
+6. What does `df[is.na(df)] <- 0` do? How does it work?
+
+> It sets all missing values in a dataframe equal to 0. It works by first creating a logical matrix, then it uses that as an index for the dataframe. It assigns 0 wherever the index is TRUE.
+
+```{r}
+df <- data.frame(
+  a = c(1,2,NA_real_),
+  b = c(NA_real_, 4, 5),
+  c = c(NA_real_, 6, 7)
+)
+df[is.na(df)] <- 0
+
+df
+```
+
+> Q: The chapter only talks about subsetting with one vector vs with two vectors, but never about subsetting with a matrix. Also, all the examples only subset with single vectors where a second vector is NULL.
