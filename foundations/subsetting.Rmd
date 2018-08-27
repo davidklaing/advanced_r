@@ -13,9 +13,9 @@ Subsetting is a natural complement to `str()`. `str()` shows you the structure o
 
 1. What is the result of subsetting a vector with positive integers, negative integers, a logical vector, or a character vector?
 > positive integers: you'll get the ith element, starting from the beginning, counting up from 1.
-> negative integers: you'll get elements in order counting down from length(vector)
-> logical vectors: if the logical vector is the same length is the vector you're subsetting, maybe it'll get every element where the logical vector is TRUE? (But isn't that what `which()` is for? I feel like maybe it'll just give you an "index out of bounds" if there are any FALSE values, and if not just return the first element.)
-> character vector: error, I assume?
+> negative integers: you'll get elements in order counting down from length(vector)?
+> logical vectors: the elements where the index is TRUE.
+> character vector: error, I assume? Unless the vector has names.
 
 2. What’s the difference between [, [[, and $ when applied to a list?
 > I don't remember the difference between [ and [[. $ allows you to index by name.
@@ -128,3 +128,40 @@ df
 ```
 
 > Q: The chapter only talks about subsetting with one vector vs with two vectors, but never about subsetting with a matrix. Also, all the examples only subset with single vectors where a second vector is NULL.
+
+## Subsetting operators
+
+[[ is similar to [ except that it can only return one value. $ is a shorthand for [[ combined with character subsetting.
+
+You need [[ when working with lists because [ always gives you a list, never its contents.
+
+> “If list x is a train carrying objects, then x[[5]] is the object in car 5; x[4:6] is a train of cars 4-6.”
+> 
+> — @RLangTip
+
+Important distinction:
+
+- simplifying subsetting vs preserving subsetting. Simplifying is good because it returns the simplest possible structure for your data. Preserving is good because it's consistent with the original structure.
+
+`$` does partial matching, which means that e.g. if an element of a list has the name `abc`, you can access it with `$a`.
+
+All the operators give different outputs when an index is out of bounds, missing, or NULL.
+
+### Exercises
+
+Given a linear model, e.g., mod <- lm(mpg ~ wt, data = mtcars), extract the residual degrees of freedom. Extract the R squared from the model summary (summary(mod))
+
+```{r}
+mod <- lm(mpg ~ wt, data = mtcars)
+
+# residual degrees of freedom:
+mod$df.residual
+
+# r squared
+mod_summary <- summary(mod)
+
+mod_summary$r.squared
+```
+
+## Subsetting and assignment
+
