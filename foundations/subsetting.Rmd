@@ -165,3 +165,64 @@ mod_summary$r.squared
 
 ## Subsetting and assignment
 
+Subsetting with nothing preserves the class and structure of the original object.
+
+```{r}
+mtcars[] <- lapply(mtcars, as.integer)
+mtcars
+mtcars <- lapply(mtcars, as.integer)
+mtcars
+```
+
+You can remove items from lists by assigning NULL to their subsets.
+
+## Applications
+
+### Character matching
+
+Character matching can be useful for creating lookup tables.
+
+```{r}
+x <- c("m", "f", "u", "f", "f", "m", "m")
+lookup <- c(m = "Male", f = "Female", u = NA)
+lookup[x]
+```
+
+In most cases I would just use case_when for this sort of thing. I wonder whether case_when uses this in its implementation.
+
+### Matching and merging
+
+Looks like the base R way of doing SQL style joins.
+
+```{r}
+grades <- c(1, 2, 2, 3, 1)
+
+info <- data.frame(
+  grade = 3:1,
+  desc = c("Excellent", "Good", "Poor"),
+  fail = c(F, F, T)
+)
+
+id <- match(grades, info$grade)
+
+info[id, ]
+
+info[c(1,2,3,3,2,1,1,2,3), ]
+```
+
+So, this is the kind of thing that you would not do if you're programming with dplyr. But it would often be needed if you want to remove the dplyr dependency.
+
+### Random samples/bootstrap
+
+Just use `sample`'s outputs as integer indices for whatever you're subsetting.
+
+### Ordering
+
+```{r}
+c(1,2,3,2)[order(c(1,2,3,2))]
+```
+
+### Selecting rows based on a condition
+
+`subset()` looks like a useful function for filtering in base R.
+
