@@ -7,3 +7,119 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+## Quiz
+
+1. What are the three components of a function?
+> its name, its arguments, and its contents?
+> nope: body, arguments, and environment
+
+2. What does the following code return?
+
+```
+x <- 10
+f1 <- function(x) {
+  function() {
+    x + 10
+  }
+}
+f1(1)()
+```
+
+> 20? Let's see...
+
+```{r}
+x <- 10
+f1 <- function(x) {
+  function() {
+    x + 10
+  }
+}
+f1(1)()
+```
+
+> Lol. Fooled me.
+
+3. How would you more typically write this code?
+
+```{r}
+`+`(1, `*`(2, 3))
+```
+
+Like this:
+
+```{r}
+1 + 2*3
+```
+
+> correct
+
+4. How could you make this call easier to read?
+
+```{r}
+mean(, TRUE, x = c(1:10, NA))
+```
+
+Like this:
+
+```{r}
+mean(x = c(1:10, NA), na.rm = TRUE)
+```
+
+> correct
+
+5. Does the following function throw an error when called? Why/why not?
+
+```
+f2 <- function(a, b) {
+  a * 10
+}
+f2(10, stop("This is an error!"))
+```
+
+> I expect that if we passed in something like b = 5, we'd get an error because b never got used in the function. But since we're passing in an error message, maybe that nullifies the "never got used" error because a different error was passed in instead? But it's not like it was actually used, so that wouldn't really make sense. I have no idea. Let's see.
+
+```{r}
+f2 <- function(a, b) {
+  a * 10
+}
+f2(10, stop("This is an error!"))
+```
+
+> Okay, turns out I was wrong about that initial claim too. The function runs fine even if you give it a normal input. (I wonder why I've seen that error before in other situations?)
+
+6. What is an infix function? How do you write it? What’s a replacement function? How do you write it?
+
+> No clue.
+
+7. What function do you use to ensure that a cleanup action occurs regardless of how a function terminates?
+
+> No clue.
+> answer: `on.exit()`. That could be very handy!
+
+## Function components
+
+### Exercises
+
+1. What function allows you to tell if an object is a function? What function allows you to tell if a function is a primitive function?
+
+> `is.function`
+> `is.primitive`
+
+2. This code makes a list of all functions in the base package.
+
+```{r}
+objs <- mget(ls("package:base"), inherits = TRUE)
+funs <- Filter(is.function, objs)
+```
+
+> continue here tomorrow
+
+Use it to answer the following questions:
+
+  a. Which base function has the most arguments?
+  b. How many base functions have no arguments? What’s special about those functions?
+  c. How could you adapt the code to find all primitive functions?
+
+3.What are the three important components of a function?
+
+4. When does printing a function not show what environment it was created in?
