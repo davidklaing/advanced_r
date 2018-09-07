@@ -150,3 +150,74 @@ length(funs)
 Q: need more information about environments. I don't have a strong enough understanding of this.
 
 ## Lexical scoping
+
+Scoping: the set of rules that defines how a value is extracted from a symbol.
+
+There are two types of scoping in R: "lexical" scoping and "dynamic" scoping. Not going to worry about the difference for now, except to say that we're learning about lexical scoping at the moment.
+
+"lexical" comes from the computer science term "lexing" which is the process of converting code represented as text to meaningful objects that the computer can manipulate. Seems kind of like the converse of the definition of scoping...
+
+Different languages implement scoping in different ways. R's implementation relies on four concepts:
+
+- name masking
+- functions vs variables
+- a fresh start
+- dynamic lookup
+
+### Name masking
+
+```{r}
+f <- function() {
+  x <- 1
+  y <- 2
+  c(x, y)
+}
+f()
+rm(f)
+```
+```{r}
+x <- 2
+g <- function() {
+  y <- 1
+  c(x, y)
+}
+g()
+rm(x, g)
+```
+
+```{r}
+x <- 1
+h <- function() {
+  y <- 2
+  i <- function() {
+    z <- 3
+    c(x, y, z)
+  }
+  i()
+}
+h()
+rm(x, h)
+```
+
+When a name isn't defined in a given function, R will look one level up — in the exterior function (if there is one), then in the global environment, then in other loaded packages.
+
+A *closure* is a function created by another function. E.g. in the code below, `k` is a closure.
+
+```{r}
+j <- function(x) {
+  y <- 2
+  function() {
+    c(x, y)
+  }
+}
+k <- j(1)
+k()
+rm(j, k)
+```
+
+`j` calls `function() {c(x, y)}`, so you might wonder how it knows the value of `y`. It knows because closures preserve the environments they were created in. In this case, that environment...'is'...the function `j`?
+
+Q: this all makes sense, but why is it called "name masking"?
+
+
+
