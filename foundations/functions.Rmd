@@ -219,5 +219,53 @@ rm(j, k)
 
 Q: this all makes sense, but why is it called "name masking"?
 
+### Functions vs. variables
 
+The rules for finding functions are the same as the rules for finding variables - look first in the immediate environment, then up, then up, etc. But there is one tweak: if a name is used in a context where it's obvious that you're referring to a function, R will call the function even if a variable would otherwise have masked that name.
+
+```{r}
+n <- function(x) x / 2
+o <- function() {
+  n <- 10
+  n(n)
+}
+o()
+rm(n, o)
+```
+
+### A fresh start
+
+In between executions of a function, any names that were created during the first execution will be wiped clean before the second. For example:
+
+```{r}
+j <- function() {
+  if (!exists("a")) {
+    a <- 1
+  } else {
+    a <- a + 1
+  }
+  a
+}
+j()
+rm(j)
+```
+
+The function above returns 1 every time. This is because every time a function is called, R creates a new environment to host the execution. Every execution is independent.
+
+### Dynamic lookup
+
+R looks up the value of a name in a function when the function is executed, not when it's created.
+
+```{r}
+f <- function() x
+x <- 15
+f()
+```
+
+```{r}
+x <- 20
+f()
+```
+
+(This function is not referentially transparent!) You can use `codetools::findGlobals()` to find all the external dependencies of a function.
 
