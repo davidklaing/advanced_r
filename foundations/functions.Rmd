@@ -269,3 +269,44 @@ f()
 
 (This function is not referentially transparent!) You can use `codetools::findGlobals()` to find all the external dependencies of a function.
 
+#### Exercises
+
+1. What does the following code return? Why? What does each of the three c’s mean?
+
+```{r}
+c <- 10
+c(c = c)
+```
+
+> It returns a numeric vector of length one with the only element having the name "c" and the value 10.
+> In the second line of code, the first c is a function — short for "combine", used to create a vector — the second c is a name given to the first element in the vector, and the third c refers to the variable "c" which was defined in the line above.
+
+2. What are the four principles that govern how R looks for values?
+
+- name masking: a name can mask the value of another name if it is defined in a more immediate environment relative to the execution of a function.
+- functions vs variables: functions follow the same rules as variables except that when you use the name of a function in a way where it's obvious that you're referring to a function (e.g. `f()` rather than `f`), R will look for the matching *function* that is most immediate, even if that means ignoring a more immediate variable.
+- "a fresh start": every time you execute a function, any names that are defined internally will be redefined as if for the first time, even if that function was executed previously.
+- dynamic lookup: R looks for the value of a variable when the function is executed, not when it's defined. This means that if you source a function that has undefined variables, you won't get an error — you would need to execute the function for R to actually search for those variables and notice that they're undefined.
+
+3. What does the following function return? Make a prediction before running the code yourself.
+
+```{r}
+f <- function(x) {
+  f <- function(x) {
+    f <- function(x) {
+      x ^ 2
+    }
+    f(x) + 1
+  }
+  f(x) * 2
+}
+f(10)
+```
+
+1. the first internal f is defined.
+2. the first internal f is called with 10 as its argument.
+3. the second internal f is defined.
+4. the second internal f is called, with 10 as its argument, returning 100, then 1 is added to the result, returning 101.
+5. 101 is multiplied by 2, returning 202.
+
+Prediction: 202
