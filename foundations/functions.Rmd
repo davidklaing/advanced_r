@@ -310,3 +310,89 @@ f(10)
 5. 101 is multiplied by 2, returning 202.
 
 Prediction: 202
+
+## Every operation is a function call
+
+> “To understand computations in R, two slogans are helpful:
+> - Everything that exists is an object.
+> - Everything that happens is a function call."
+> — John Chambers
+
+Everything that happens in R is a function call, even if it doesn't look like one. This is true of for loops, conditionals, subsetting, and mathematica operations. This can be useful in conjunction with sapply, vapply, etc. For example:
+
+```{r}
+x <- list(1:3, 4:9, 10:12)
+sapply(x, "[", 2)
+```
+
+## Function arguments
+
+There is a difference between an argument's formal arguments (which are a property of a function) and its calling arguments, which are the values passed in to those formal arguments when the function is executed.
+
+### Calling functions
+
+You can abbreviate the names of the formal arguments when you execute the function... but I have no clue why you would do that. This seems like the kind of thing that gives R a bad reputation.
+
+### Calling a function given a list of arguments
+
+If you have a list of arguments and you want to pass them into a function for execution, you can use the function `do.call`. For example:
+
+```{r}
+args <- list(1:10, na.rm = TRUE)
+do.call(mean, args)
+
+# Equivalent to
+mean(1:10, na.rm = TRUE)
+```
+
+### Default and missing arguments
+
+You can apparently define default arguments in terms of variables that get defined within that seame function... Also seems kinda crazy.
+
+You can use the function `missing()` to determine whether an argument was supplied or not.
+
+### Lazy evaluation
+
+In R, function arguments are only evaluated if they're actually used.
+
+```{r}
+f <- function(x) {
+  10
+}
+f(stop("This is an error!"))
+```
+
+If you want to force an argument to be evaluated, you can use `force()`.
+
+```{r}
+f <- function(x) {
+  force(x)
+  10
+}
+f(stop("This is an error!"))
+```
+
+```{r}
+add <- function(x) {
+  function(y) x + y
+}
+adders <- lapply(1:10, add)
+adders[[1]](10)
+adders[[10]](10)
+```
+
+```{r}
+add <- function(x) {
+  force(x)
+  function(y) x + y
+}
+adders2 <- lapply(1:10, add)
+adders2[[1]](10)
+adders2[[10]](10)
+```
+
+```{r}
+adders[[1]](1)
+```
+
+These examples don't make sense to me. Looks like it might be an error — perhaps I should email Hadley about this, and also my question about name masking.
