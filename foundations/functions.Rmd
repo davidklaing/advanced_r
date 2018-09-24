@@ -396,3 +396,60 @@ adders[[1]](1)
 ```
 
 These examples don't make sense to me. Looks like it might be an error — perhaps I should email Hadley about this, and also my question about name masking.
+
+Another useful trick:
+
+Use `&&` or `||` to evaluate the two conditions in a predicate in turn. Especially useful when you want to check whether something is null before checking whether the conditionally non-null value is in some given range. E.g
+
+```{r}
+x <- NULL
+if (!is.null(x) && x > 0) {
+  print("hey")
+} else {
+  print("ho")
+}
+```
+
+#### Exercises
+
+1. Clarify the following list of odd function calls:
+
+```{r}
+set.seed(1)
+x <- sample(replace = TRUE, 20, x = c(1:10, NA))
+y <- runif(min = 0, max = 1, 20)
+cor(m = "k", y = y, u = "p", x = x)
+```
+
+```{r}
+set.seed(1)
+x <- sample(x = c(1:10, NA), size = 20, replace = TRUE)
+y <- runif(n = 20, min = 0, max = 1)
+cor(x = x, y = y, method = "kendall", use = "pairwise.complete.obs")
+```
+
+2. What does this function return? Why? Which principle does it illustrate?
+
+```{r}
+f1 <- function(x = {y <- 1; 2}, y = 0) {
+  x + y
+}
+f1()
+```
+
+It returns 3 because when x is evaluated, a new y is defined in the local environment which masks the original value of y, 0, and then x is set to 2. This illustrates name masking.
+
+3. What does this function return? Why? Which principle does it illustrate?
+
+```{r}
+f2 <- function(x = z) {
+  z <- 100
+  x
+}
+f2()
+```
+
+This function returns 100, because argument defaults can be defined in terms of variables that don't get defined until the body of the function. (What if `z` existed outside this function?) This illustrates the principle of lazy evaluation.
+
+## Special calls
+
