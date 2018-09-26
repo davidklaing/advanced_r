@@ -453,3 +453,32 @@ This function returns 100, because argument defaults can be defined in terms of 
 
 ## Special calls
 
+### Infix functions
+
+You can write user-defined functions that are called in between arguments instead of outside of them, the same way these functions are equivalent:
+
+```{r}
+1 + 2
+`+`(1, 2)
+```
+
+The magrittr pipe is an example of this!
+
+```{r}
+tibble::tibble(a = c(1)) %>% mutate(b = 2)
+`%>%`(`%>%`(tibble::tibble(a = c(1)), mutate(b = 2)), select(a))
+```
+
+### Replacement functions
+
+You can write functions with a special name format, namely `xxx<-`, that act like they modify their arguments in place. (They don't actually — they create a modified copy of the data.) But if you want to save yourself from using that extra memory, you should use built-in functions. Replacement and subsetting are useful in tandem, like in the example below:
+
+```{r}
+x <- c(a = 1, b = 2, c = 3)
+names(x)
+names(x)[2] <- "two"
+names(x)
+```
+
+### Exercises
+
