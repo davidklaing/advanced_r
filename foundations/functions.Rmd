@@ -482,3 +482,70 @@ names(x)
 
 ### Exercises
 
+1. Create a list of all the replacement functions found in the base package. Which ones are primitive functions?
+
+```{r}
+objs <- mget(ls("package:base"), inherits = TRUE)
+funs <- Filter(is.function, objs)
+replacement_funs <- funs[str_detect(names(funs), ".*<-$")]
+names(replacement_funs)
+
+prim_replacement_funs <- Filter(is.primitive, replacement_funs)
+names(prim_replacement_funs)
+```
+
+2. What are valid names for user-created infix functions?
+
+> Anything that starts and ends with `%`.
+
+3. Create an infix xor() operator.
+
+```{r}
+`%xor%` <- function(a, b) {
+  if (a & !b | b & !a) return(TRUE) else return(FALSE)
+}
+FALSE %xor% FALSE
+```
+
+4. Create infix versions of the set functions intersect(), union(), and setdiff().
+
+```{r}
+a <- c(3, 4, 5, 6, 3, 3, 3, 1)
+b <- c(1, 2, 3, 4, 4)
+
+`%intersect%` <- function(a, b) {
+  a_index <- a %in% b
+  unique(a[a_index])
+}
+all(a %intersect% b == intersect(a, b))
+all(b %intersect% a == intersect(b, a))
+
+`%union%` <- function(a, b) {
+  unique(c(a, b))
+}
+all(a %union% b == union(a, b))
+all(b %union% a == union(b, a))
+
+`%setdiff%` <- function(a, b) {
+  a_index <- !a %in% b
+  unique(a[a_index])
+}
+all(a %setdiff% b == setdiff(a, b))
+all(b %setdiff% a == setdiff(b, a))
+
+setdiff(c(1, 2, 3), c(3, 4, 5))
+```
+
+5. Create a replacement function that modifies a random location in a vector.
+
+```{r}
+`random_location<-` <- function(x, value) {
+  random_index <- sample(1:length(x), 1)
+  x[random_index] <- value
+  return(x)
+}
+a <- c(1, 2, 3, 4)
+random_location(a) <- 5
+a
+```
+
