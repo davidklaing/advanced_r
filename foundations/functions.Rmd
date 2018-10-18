@@ -377,7 +377,7 @@ add <- function(x) {
   function(y) x + y
 }
 adders <- lapply(1:10, add)
-adders[[1]](10)
+adders[[1]](1)
 adders[[10]](10)
 ```
 
@@ -387,9 +387,20 @@ add <- function(x) {
   function(y) x + y
 }
 adders2 <- lapply(1:10, add)
-adders2[[1]](10)
+adders2[[1]](1)
 adders2[[10]](10)
 ```
+
+```{r}
+add <- function(x) {
+  x
+  function(y) x + y
+}
+adders3 <- lapply(1:10, add)
+adders3[[1]](1)
+adders3[[10]](10)
+```
+
 
 ```{r}
 adders[[1]](1)
