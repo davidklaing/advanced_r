@@ -1,0 +1,68 @@
+---
+title: "Environments"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Quiz
+
+1. List at least three ways that an environment is different to a list.
+
+> I have no idea how environments are represented. I don't really understand the context of the question, because environments and lists seem entirely different.
+
+2. What is the parent of the global environment? What is the only environment that doesn’t have a parent?
+
+> Loaded packages?
+
+3. What is the enclosing environment of a function? Why is it important?
+
+> The environment in which the will be evaluated? I assume it's important because it determines how the scoping rules interact when a function is called.
+
+4. How do you determine the environment from which a function was called?
+
+> No idea.
+
+5. How are <- and <<- different?
+
+> I've seen this before, but I can't remember.
+
+## Prerequisites
+
+```{r}
+library(rlang)
+
+# Some API changes that haven't made it in rlang yet
+search_envs <- function() {
+  rlang:::new_environments(c(
+    list(global_env()),
+    head(env_parents(global_env()), -1)
+  ))
+}
+```
+
+## Environment basics
+
+K, before we get into this, let's get this clear: an environment is a data structure. That makes sense. You can define its contents with `rlang::env()`, which works like `list()`.
+
+For example:
+
+```{r}
+e1 <- env(
+  a = FALSE,
+  b = "a",
+  c = 2.3,
+  d = 1:3,
+)
+```
+
+Notes:
+
+- The job of an environment is to associate, or bind, a set of names to a set of values.
+- The objects in an environment have no inherent order.
+- An environment can contain itself.
+- To print an environment, use `rlang::env_names()`.
+
+### Important environments
