@@ -66,3 +66,24 @@ Notes:
 - To print an environment, use `rlang::env_names()`.
 
 ### Important environments
+
+- the global environment, the current environment, the empty environment (which is the only one that doesn't have a parent)
+- not sure why this matters yet. Clearly it's relevant for lexical scoping, but I'm not sure when it would be relevant in situations where you have carefully named all your variables to avoid unintended name masking...
+
+### Super assignment
+
+`<<-` doesn't define a variable in the current environment; it redefines a variable in the parent environment. E.g.
+
+```{r}
+x <- 0
+f <- function() {
+  x <<- 1
+}
+f()
+x
+```
+
+### Packages and environments
+
+Each attached package becomes the immediate parent of the global environment. The immediate parent of the global environment is whichever was the last package you attached. The parent of that environment is the previous package you attached, etc. This is where lexical scoping and environments interact to actually matter for day-to-day purposes — especially relevant when two packages have functions with the same name. Though in package development that shouldn't matter, because you'd always prepend a function call with the package name.
+
